@@ -1,0 +1,23 @@
+{
+  "name": "roamwise-trip-planner",
+  "version": "1.0.0",
+  "description": "Roamwise AI personal trip and itinerary planner",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "travel",
+    "itinerary",
+    "chatbot",
+    "ai"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "openai": "^4.41.0",
+    "pdfkit": "^0.15.1"
+  }
+}
