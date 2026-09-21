@@ -6,15 +6,15 @@ const tripForm = document.getElementById('trip-form');
 const resetButton = document.getElementById('reset-trip');
 
 const state = {
-  trip: { destination: '', startDate: '', endDate: '', travelers: 0, budget: 0, style: '' },
+  trip: { destination: 'Lisbon, Portugal', startDate: '2026-10-10', endDate: '2026-10-13', travelers: 2, budget: 1500, style: 'Food and culture' },
   history: []
 };
-const savedTrip = localStorage.getItem('roamwise-trip');
+const savedTrip = localStorage.getItem('roamwise-brief');
 if (savedTrip) {
   try {
     state.trip = { ...state.trip, ...JSON.parse(savedTrip) };
   } catch (error) {
-    localStorage.removeItem('roamwise-trip');
+    localStorage.removeItem('roamwise-brief');
   }
 }
 
@@ -54,6 +54,21 @@ function calculateSummary() {
   document.getElementById('trip-style').textContent = style || 'Not set';
 }
 
+function getStaticReply(value) {
+  const prompt = value.toLowerCase();
+  const destination = state.trip.destination || 'Lisbon';
+  if (prompt.includes('pack')) {
+    return `For ${destination}, pack comfortable walking shoes, a light rain layer, a reusable water bottle, universal adapter, and one smart-casual outfit. Keep valuables in a small crossbody bag.`;
+  }
+  if (prompt.includes('food') || prompt.includes('eat')) {
+    return `A great food route in ${destination}: start with a local market breakfast, book one neighborhood restaurant for dinner, and leave lunch flexible for a small cafe or street-food stop. Ask locals for the daily special.`;
+  }
+  if (prompt.includes('hidden') || prompt.includes('gem')) {
+    return `Try a quiet morning away from the main sights, a neighborhood walking tour, and one viewpoint at sunset. The best hidden gems are usually two streets beyond the busiest landmark.`;
+  }
+  return `Here is a relaxed plan for ${destination}: Day 1, arrive and explore the historic center; Day 2, visit the signature landmark and take a local food break; Day 3, choose a nearby neighborhood or day trip and finish with sunset views. I can make it more adventurous, cultural, or budget-friendly.`;
+}
+
 async function handleSubmit(event) {
   event.preventDefault();
   const value = input.value.trim();
@@ -62,7 +77,7 @@ async function handleSubmit(event) {
   input.value = '';
   const sendButton = document.getElementById('send-button');
   sendButton.disabled = true;
-  sendButton.textContent = 'Thinking...';
+  sendButton.textContent = 'Replying...';
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
@@ -70,34 +85,13 @@ async function handleSubmit(event) {
       body: JSON.stringify({ message: value, trip: state.trip, history: state.history.slice(0, -1) })
     });
     const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || 'The AI service did not respond successfully.');
-    }
-    addMessage(data.reply || 'I could not generate a response right now.', 'assistant');
+    if (!response.ok) throw new Error(data.error || 'The travel API did not respond.');
+    addMessage(data.reply || getStaticReply(value), 'assistant');
   } catch (error) {
-    const message = error.message.startsWith('The AI planner is unavailable.')
-      ? error.message
-      : `The AI planner is unavailable. ${error.message}`;
-    addMessage(`${message} Your trip brief is still saved.`, 'assistant');
+    addMessage(`${getStaticReply(value)}\n\n(Demo fallback: ${error.message})`, 'assistant');
   } finally {
     sendButton.disabled = false;
-    sendButton.textContent = 'Plan';
-  }
-}
-
-async function updateApiStatus() {
-  const status = document.getElementById('api-status');
-  try {
-    const response = await fetch('/api/health');
-    const data = await response.json();
-    status.textContent = data.aiConfigured ? 'AI configured' : 'Fallback mode';
-    status.classList.toggle('connected', Boolean(data.aiConfigured));
-    status.title = data.aiConfigured
-      ? 'An OpenAI key is configured. Account credits and model access are checked when you send a message.'
-      : 'No OpenAI key configured. Replies use limited local planning logic.';
-  } catch (error) {
-    status.textContent = 'Offline mode';
-    status.title = 'The server is unavailable. Built-in routes are still available.';
+    sendButton.textContent = 'Send';
   }
 }
 
@@ -111,17 +105,17 @@ function handleTripSubmit(event) {
   const style = document.getElementById('trip-style-input').value.trim();
   if (!destination || !startDate || !endDate || !travelers || travelers <= 0 || endDate < startDate) return;
   state.trip = { destination, startDate, endDate, travelers, budget, style };
-  localStorage.setItem('roamwise-trip', JSON.stringify(state.trip));
+  localStorage.setItem('roamwise-brief', JSON.stringify(state.trip));
   calculateSummary();
-  addMessage(`Trip brief saved for ${destination}. I am ready to shape your itinerary.`, 'assistant');
+  addMessage(`Trip brief saved for ${destination}. I am ready to map out your adventure.`, 'assistant');
 }
 
 function resetTrip() {
   state.trip = { destination: '', startDate: '', endDate: '', travelers: 0, budget: 0, style: '' };
-  localStorage.removeItem('roamwise-trip');
+  localStorage.removeItem('roamwise-brief');
   tripForm.reset();
   calculateSummary();
-  addMessage('Your trip brief has been reset. Add a new destination whenever you are ready.', 'assistant');
+  addMessage('Your trip brief has been reset. Add a destination whenever you are ready.', 'assistant');
 }
 
 quickButtons.forEach((button) => {
@@ -135,6 +129,5 @@ quickButtons.forEach((button) => {
 form.addEventListener('submit', handleSubmit);
 tripForm.addEventListener('submit', handleTripSubmit);
 resetButton.addEventListener('click', resetTrip);
-addMessage('I am Roamwise, your personal trip planner. Start with your destination and dates, then ask me anything about the journey.', 'assistant');
+addMessage('Hi, I am Roamwise. Add a destination and dates, then ask me for an itinerary, local food, packing tips, or hidden gems.', 'assistant');
 calculateSummary();
-updateApiStatus();

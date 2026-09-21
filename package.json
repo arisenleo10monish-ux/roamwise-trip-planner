@@ -4,8 +4,8 @@
   "description": "Roamwise AI personal trip and itinerary planner",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "NODE_PATH=./node_modules node server.js",
+    "dev": "NODE_PATH=./node_modules node server.js"
   },
   "keywords": [
     "travel",

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Roamwise | Personal Trip Planner</title>
+    <title>Roamwise | Travel Itinerary Planner</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
@@ -13,9 +13,9 @@
     <div class="app-shell">
       <aside class="sidebar">
         <div class="brand-wrap">
-          <div class="logo-badge">R</div>
+          <div class="logo-badge">✈</div>
           <div>
-            <p class="eyebrow">Personal trip planning</p>
+            <p class="eyebrow">AI travel planning</p>
             <h1>Roamwise</h1>
           </div>
         </div>
@@ -26,12 +26,12 @@
             <strong id="trip-destination">Not set</strong>
           </div>
           <div class="summary-row">
-            <span>Trip dates</span>
+            <span>Travel dates</span>
             <strong id="trip-dates">Not set</strong>
           </div>
           <div class="progress-wrap">
             <div class="progress-labels">
-              <span>Planning progress</span>
+              <span>Itinerary progress</span>
               <span id="trip-progress">0%</span>
             </div>
             <div class="progress-bar">
@@ -44,17 +44,17 @@
           <p class="card-title">Trip snapshot</p>
           <ul class="goals-list">
             <li><span class="dot dot-green"></span> Travelers: <strong id="traveler-count">0</strong></li>
-            <li><span class="dot dot-blue"></span> Trip budget: <strong id="trip-budget">Not set</strong></li>
-            <li><span class="dot dot-orange"></span> Style: <strong id="trip-style">Not set</strong></li>
+            <li><span class="dot dot-blue"></span> Budget: <strong id="trip-budget">Not set</strong></li>
+            <li><span class="dot dot-orange"></span> Travel style: <strong id="trip-style">Not set</strong></li>
           </ul>
         </div>
 
         <div class="summary-card data-card">
-          <h3>Build your trip brief</h3>
+            <h3>Build your trip brief</h3>
           <form id="trip-form" class="mini-form">
             <label>
               Destination
-              <input type="text" id="destination" placeholder="Kyoto, Japan" required />
+              <input type="text" id="destination" placeholder="Lisbon, Portugal" required />
             </label>
             <label>
               Start date
@@ -65,18 +65,18 @@
               <input type="date" id="end-date" required />
             </label>
             <label>
-              Travelers
-              <input type="number" id="travelers" min="1" step="1" placeholder="2" required />
+              Number of travelers
+              <input type="number" id="travelers" min="1" step="1" placeholder="5" required />
             </label>
             <label>
               Budget (optional)
-              <input type="number" id="trip-budget-input" min="0" step="1" placeholder="2500" />
+              <input type="number" id="trip-budget-input" min="0" step="50" placeholder="1500" />
             </label>
             <label>
               Travel style
-              <input type="text" id="trip-style-input" placeholder="Food, culture, and easy days" />
+              <input type="text" id="trip-style-input" placeholder="Food, culture, relaxed" />
             </label>
-            <button type="submit" class="secondary-btn">Save trip brief</button>
+            <button type="submit" class="secondary-btn">Save study brief</button>
           </form>
         </div>
 
@@ -85,26 +85,26 @@
             <h3>Trip brief</h3>
             <button id="reset-trip" class="link-btn" type="button">Reset</button>
           </div>
-          <p class="empty-state">Keep the brief current and Roamwise will use it in every answer.</p>
+          <p class="empty-state">Save a trip brief and Roamwise will use it in every answer.</p>
         </div>
       </aside>
 
       <main class="chat-panel">
         <header class="topbar">
           <div>
-            <p class="eyebrow small">AI travel companion</p>
+            <p class="eyebrow small">Your personal travel companion</p>
             <h2>Roamwise Planner</h2>
           </div>
-          <button class="status-pill" id="api-status" type="button" title="API connection status">Checking AI...</button>
+          <button class="status-pill connected" id="api-status" type="button" title="Demo mode">Demo mode</button>
         </header>
 
         <section class="messages" id="messages" aria-live="polite"></section>
 
         <div class="quick-actions" aria-label="Quick prompts">
-          <button class="chip" type="button">Plan my itinerary</button>
-          <button class="chip" type="button">Best local food</button>
-          <button class="chip" type="button">Make it more relaxed</button>
-          <button class="chip" type="button">Hidden gems</button>
+          <button class="chip" type="button">Plan my 3-day itinerary</button>
+          <button class="chip" type="button">Find local food spots</button>
+          <button class="chip" type="button">What should I pack?</button>
+          <button class="chip" type="button">Show hidden gems</button>
         </div>
 
         <form class="composer" id="chat-form">
@@ -112,11 +112,11 @@
             <input
               id="user-input"
               type="text"
-              placeholder="Ask about routes, food, stays, activities, or your itinerary..."
-              aria-label="Message the trip planning assistant"
+              placeholder="Ask about your route, food, stays, or daily plans..."
+              aria-label="Message the travel assistant"
             />
           </div>
-          <button type="submit" class="send-btn" id="send-button">Plan</button>
+          <button type="submit" class="send-btn" id="send-button">Send</button>
         </form>
       </main>
     </div>

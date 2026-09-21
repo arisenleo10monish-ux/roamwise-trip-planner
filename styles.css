@@ -1,15 +1,15 @@
 :root {
-  --bg: #e9e2d5;
+  --bg: #d7e8e8;
   --bg-soft: #fbf8f1;
   --panel: #fffdf8;
   --panel-alt: #f5efe3;
   --line: #e4d9c8;
   --text: #263b3d;
   --muted: #71807b;
-  --primary: #e56d4d;
-  --primary-soft: #fce5dc;
-  --primary-strong: #a74735;
-  --accent: #167c80;
+  --primary: #e07a50;
+  --primary-soft: #fce4d7;
+  --primary-strong: #a64f35;
+  --accent: #087f8c;
   --success: #4d9279;
   --warning: #d99b4c;
   --shadow: 0 24px 60px rgba(77, 59, 40, 0.14);
@@ -32,7 +32,7 @@ body {
   display: grid;
   place-items: center;
   padding: 28px;
-  background-image: linear-gradient(rgba(255, 253, 248, 0.28), rgba(255, 253, 248, 0.28)), url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2200&q=80");
+  background-image: linear-gradient(rgba(30, 88, 91, 0.18), rgba(255, 220, 192, 0.2)), url("https://images.unsplash.com/photo-1555881400-74d7aca83b2b?auto=format&fit=crop&w=2200&q=80");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

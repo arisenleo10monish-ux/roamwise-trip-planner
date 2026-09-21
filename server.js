@@ -54,11 +54,11 @@ function generateLocalResponse(message, trip) {
   const details = summarizeTrip(trip);
   const place = details.destination || 'your destination';
 
-  if (!text) return 'Tell me where you are going, when, and what kind of trip you want. I will shape it into a practical itinerary.';
-  if (text.includes('hello') || text.includes('hi') || text.includes('hey')) return 'Hi! I am Roamwise, your personal trip planner. Share a destination and travel style, and I will turn it into a day-by-day plan.';
+  if (!text) return 'Tell me your destination, dates, budget, or interests and I will shape them into a practical travel plan.';
+  if (text.includes('hello') || text.includes('hi') || text.includes('hey')) return 'Hi! I am Roamwise, your travel planning assistant. Share a destination and I will help shape your itinerary.';
   if (text.includes('summary') || text.includes('status') || text.includes('overview')) {
-    if (!details.destination) return 'Your trip brief is empty. Add a destination, dates, and traveler count so I can start planning.';
-    return `Your ${place} trip is set for ${details.startDate || 'flexible dates'} to ${details.endDate || 'flexible dates'} for ${details.travelers || 'your'} traveler${details.travelers === 1 ? '' : 's'}. The vibe is ${details.style || 'open-ended'}${details.budget ? ` with a ${formatCurrency(details.budget)} budget` : ''}.`;
+    if (!details.destination) return 'Your trip brief is empty. Add a destination, dates, travelers, and style so I can start planning.';
+    return `Your ${place} trip runs from ${details.startDate || 'now'} to ${details.endDate || 'your return date'} for ${details.travelers || 'your group'} traveler(s). Your style is ${details.style || 'open-ended'}${details.budget ? ` with a budget of ${formatCurrency(details.budget)}` : ''}.`;
   }
   const featuredPlace = Object.keys(famousPlaces).find((name) => text.includes(name));
   if (featuredPlace && (text.includes('plan') || text.includes('itinerary') || text.includes('route') || text.includes('trip'))) {
@@ -66,19 +66,19 @@ function generateLocalResponse(message, trip) {
   }
   if (text.includes('itinerary') || text.includes('plan') || text.includes('schedule')) {
     const days = tripDayCount(details.startDate, details.endDate);
-    const lines = [`A practical ${days}-day ${place} plan for ${details.travelers || 'your'} traveler${details.travelers === 1 ? '' : 's'}:`];
+    const lines = [`A practical ${days}-day ${place} itinerary:`];
     for (let day = 1; day <= days; day += 1) {
-      const focus = day === 1 ? 'arrival, orientation, and one easy neighborhood walk' : day === days ? 'one final anchor experience, a good meal, and an unhurried departure buffer' : 'one main sight, a local meal, and a nearby neighborhood to explore';
+      const focus = day === 1 ? 'arrival, neighborhood walk, and a relaxed local dinner' : day === days ? 'a flexible final morning, souvenirs, and departure preparation' : 'one signature sight, a local food stop, and an unhurried evening';
       lines.push(`Day ${day}: ${focus}.`);
     }
-    lines.push(`Keep at least one open block each day. ${details.budget ? `With a ${formatCurrency(details.budget)} total budget, avoid stacking expensive tours on consecutive days.` : 'Add your budget and must-see interests and I can make the pacing more specific.'}`);
+    lines.push(`Keep the route flexible and group nearby places together. ${details.budget ? `Keep the total trip spend near ${formatCurrency(details.budget)}.` : 'Add a budget and travel style for a more precise schedule.'}`);
     return lines.join('\n');
   }
-  if (text.includes('food') || text.includes('restaurant') || text.includes('eat')) return `For food in ${place}, I would mix one highly rated reservation with neighborhood spots, a market or bakery breakfast, and one memorable local specialty each day. Tell me your dietary needs and price range for a tighter shortlist.`;
-  if (text.includes('relaxed') || text.includes('slow') || text.includes('easy')) return 'For a slower trip, I would keep mornings open, group nearby sights together, add a long lunch, and protect at least one unscheduled afternoon.';
-  if (text.includes('hidden') || text.includes('local') || text.includes('gem')) return `I can look for quieter neighborhoods, independent cafes, local markets, and less crowded alternatives around ${place}. Share what you already plan to see so the hidden gems complement your route.`;
+  if (text.includes('pack')) return `For ${place}, pack comfortable walking shoes, a light layer, a reusable water bottle, a universal adapter, and one smart-casual outfit.`;
+  if (text.includes('food') || text.includes('eat')) return `For food in ${place}, combine one market breakfast, one neighborhood lunch, and a dinner reservation. Ask locals for the daily special.`;
+  if (text.includes('hidden') || text.includes('gem')) return `For hidden gems in ${place}, explore one neighborhood away from the main landmark and choose a local market or viewpoint at sunset.`;
   if (text.includes('thanks') || text.includes('thank you')) return 'You are welcome. Update the trip brief anytime and I will keep the itinerary aligned with your dates, pace, and interests.';
-  return 'I can help with day-by-day itineraries, routes, food, stays, activities, local customs, and realistic pacing. Add your trip brief for more personalized ideas.';
+  return 'I can build itineraries, suggest food spots, recommend packing lists, find hidden gems, and adapt plans to your budget and travel style.';
 }
 
 app.post('/api/chat', async (req, res) => {
@@ -89,7 +89,7 @@ app.post('/api/chat', async (req, res) => {
     .slice(-8) : [];
   if (!message.trim()) return res.status(400).json({ error: 'Message is required.' });
 
-  const prompt = `You are planning a personal trip for the user. Use the trip brief below and answer the user's request with concise, specific, practical travel guidance. Suggest realistic pacing, local context, and alternatives when useful. Never invent bookings or claim live availability.\n\nUser message: ${message}\nTrip brief: destination=${trip.destination || 'not set'}, dates=${trip.startDate || 'not set'} to ${trip.endDate || 'not set'}, travelers=${trip.travelers || 'not set'}, budget=${trip.budget ? formatCurrency(trip.budget) : 'not set'}, style=${trip.style || 'not set'}.`;
+  const prompt = `You are Roamwise, a practical travel itinerary assistant. Use the trip brief and the user's message to give concise, specific, realistic travel guidance. Recommend routes that group nearby places, include food and local experiences, respect the budget and dates, and never invent bookings or live availability.\n\nUser message: ${message}\nTrip brief: destination=${trip.destination || 'not set'}, dates=${trip.startDate || 'not set'} to ${trip.endDate || 'not set'}, travelers=${trip.travelers || 'not set'}, budget=${trip.budget ? formatCurrency(trip.budget) : 'not set'}, travel style=${trip.style || 'not set'}.`;
 
   if (aiApiKey) {
     try {
@@ -99,7 +99,7 @@ app.post('/api/chat', async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: 'You are Roamwise, a curious, thoughtful, practical personal trip planner. Use the trip brief and recent conversation. Give specific, realistic advice with good pacing, local flavor, clear logistics, and room for discovery. When planning an itinerary, organize it by day with morning, afternoon, and evening suggestions. Ask one focused follow-up when a missing detail materially changes the plan. Never invent bookings, live availability, or live prices; label anything that needs checking.'
+            content: 'You are Roamwise, a curious and practical travel assistant. Use the trip brief and recent conversation. Give specific, realistic itinerary guidance with clear daily plans, local food ideas, pacing, and budget awareness. Ask one focused follow-up when a missing detail materially changes the plan.'
           },
           ...history,
           { role: 'user', content: prompt }
@@ -127,7 +127,7 @@ app.post('/api/chat', async (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({
   ok: true,
-  service: 'roamwise-trip-planner',
+  service: 'studywise-ai-planner',
   aiConfigured: Boolean(aiApiKey),
   aiProvider: aiApiKey ? aiProvider : null,
   aiModel: aiApiKey ? aiModel : null
